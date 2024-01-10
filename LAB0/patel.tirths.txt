@@ -1,0 +1,2 @@
+1. A complete Ubuntu 20.04 LTS install.
+2. I am ready to use Git and GitHub.
