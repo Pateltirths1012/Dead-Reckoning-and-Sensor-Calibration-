@@ -48,20 +48,27 @@ def convertToUTM(LatitudeSigned, LongitudeSigned):
 
 #function to convert the gps time to the time needed by ROS
 def UTCtoUTCEpoch(UTC):
-    UTCinSecs = (int(UTC[0:2]) * (3600 + int(UTC[2:4])) + float(UTC[4:]))
+    hours = int(UTC[:2])
+    minutes = int(UTC[2:4])
+    seconds = float(UTC[4:])    
+    UTCinSecs = hours * 3600 + minutes * 60 + seconds
     TimeSinceEpoch = time.time()
-    TimeSinceEpochBOD = TimeSinceEpoch - time.localtime().tm_sec - (time.localtime().tm_min * 60) - (time.localtime().tm_hour * 3600)
+    TimeSinceEpochBOD = TimeSinceEpoch - (TimeSinceEpoch % 86400)
     CurrentTime = TimeSinceEpochBOD + UTCinSecs
     CurrentTimeSec = int(CurrentTime)
     CurrentTimeNsec = int((CurrentTime % 1) * 10**len(str(CurrentTime).split('.')[1]))
-    # print(CurrentTime)
-    return [CurrentTime, CurrentTimeSec , CurrentTimeNsec]
+    print(CurrentTime)
+    return [CurrentTimeSec, CurrentTimeNsec]
 
 # function to read the data from the gps puck
 def ReadFromSerial(serialPortAddr):
     serialPort = serial.Serial(port=serialPortAddr, baudrate=4800, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
-    gpggaRead = serialPort.readline()
-    print(gpggaRead)
+    try:    
+        gpggaRead = serialPort.readline()
+        gpggaRead = gpggaRead.decode('utf-8', errors = 'replace').strip()
+        print(gpggaRead)
+    except UnicodeDecodeError as e:
+        pass
     serialPort.close()
     return gpggaRead
 
@@ -70,7 +77,7 @@ if __name__ == '__main__':
 
     #Publisher code  
     rospy.init_node("gps_publisher", anonymous=True)
-    pub = rospy.Publisher("custom_gps_topic", Customgps, queue_size=1)
+    pub = rospy.Publisher("gps", Customgps, queue_size=1)
     rate = rospy.Rate(1)
 
     SerialPortAddr = rospy.get_param("~port")
@@ -86,18 +93,19 @@ if __name__ == '__main__':
         
             #Read a line from the GPS puck
             gpggaRead = ReadFromSerial(SerialPortAddr)
-            inputString = gpggaRead.decode('utf-8').strip()
-            if not isGPGGAinString(inputString):
+            # inputString = gpggaRead.decode('latin-1').strip()
+            if not isGPGGAinString(gpggaRead):
                 continue
             
-            gpggaSplit = inputString.split(",") 
+            gpggaSplit = gpggaRead.split(",") 
+            
             UTC = gpggaSplit[1]
             Latitude = gpggaSplit[2]
             LatitudeDir = gpggaSplit[3]
             Longitude = gpggaSplit[4]
             LongitudeDir = gpggaSplit[5]
-            altitude = gpggaSplit[9]
-            HDOP = gpggaSplit[8]
+            altitude = float(gpggaSplit[9])
+            HDOP = float(gpggaSplit[8])
             Latitude = degMinstoDegDec(Latitude)
             Longitude = degMinstoDegDec(Longitude)
             LatitudeSigned = LatLongSignConvetion(Latitude, LatitudeDir)
@@ -105,8 +113,8 @@ if __name__ == '__main__':
             UTMVals = convertToUTM(LatitudeSigned, LongitudeSigned)
             CurrentTime = UTCtoUTCEpoch(UTC)
             
-            custom_gps_msg.header.stamp.secs = CurrentTime[1]
-            custom_gps_msg.header.stamp.nsecs = CurrentTime[2]
+            custom_gps_msg.header.stamp.secs = CurrentTime[0]
+            custom_gps_msg.header.stamp.nsecs = CurrentTime[1]
             custom_gps_msg.latitude = LatitudeSigned
             custom_gps_msg.longitude = LongitudeSigned
             custom_gps_msg.altitude = altitude
