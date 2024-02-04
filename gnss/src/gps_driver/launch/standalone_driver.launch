@@ -1,0 +1,14 @@
+<launch>
+  <!-- Launch file for the GPS publisher node -->
+
+  <!-- Declare argument for the USB port -->
+  <arg name="port" default="/dev/ttyUSB0" />
+
+  <!-- Start the GPS publisher node -->
+  <node name="gps_publisher" pkg="gps_driver" type="standalone_driver.py" output="screen">
+    <param name="port" type="string" value="$(arg port)" /> 
+  </node>
+
+</launch>
+
+
