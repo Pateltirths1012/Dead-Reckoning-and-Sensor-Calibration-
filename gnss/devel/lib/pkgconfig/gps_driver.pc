@@ -1,0 +1,8 @@
+prefix=/home/tirth/Desktop/EECE5554/gnss/devel
+
+Name: gps_driver
+Description: Description of gps_driver
+Version: 0.0.0
+Cflags: -I/home/tirth/Desktop/EECE5554/gnss/devel/include
+Libs: -L${prefix}/lib 
+Requires: std_msgs message_runtime

@@ -53,10 +53,10 @@ def UTCtoUTCEpoch(UTC):
     seconds = float(UTC[4:])    
     UTCinSecs = hours * 3600 + minutes * 60 + seconds
     TimeSinceEpoch = time.time()
-    TimeSinceEpochBOD = TimeSinceEpoch - (TimeSinceEpoch % 86400)
+    TimeSinceEpochBOD = TimeSinceEpoch - time.localtime().tm_sec - (time.localtime().tm_min * 60) - (time.localtime().tm_hour * 3600)
     CurrentTime = TimeSinceEpochBOD + UTCinSecs
     CurrentTimeSec = int(CurrentTime)
-    CurrentTimeNsec = int((CurrentTime % 1) * 10**len(str(CurrentTime).split('.')[1]))
+    CurrentTimeNsec = int((CurrentTime - CurrentTimeSec) * (10**9))
     print(CurrentTime)
     return [CurrentTimeSec, CurrentTimeNsec]
 
