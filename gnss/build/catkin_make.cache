@@ -1,2 +1,0 @@
-gps_driver
--DCATKIN_DEVEL_PREFIX=/home/tirth/Desktop/EECE5554/gnss/devel -DCMAKE_INSTALL_PREFIX=/home/tirth/Desktop/EECE5554/gnss/install -G Unix Makefiles
