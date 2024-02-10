@@ -1,0 +1,11 @@
+<launch>
+
+
+  <arg name="port" default="/dev/ttyUSB0" />
+
+<!-- Start the GPS publisher node -->
+  <node name="rtk_gps_publisher" pkg="gps_driver" type="rtk_driver.py" output="screen">
+    <param name="port" type="string" value="$(arg port)" /> 
+  </node>
+
+</launch>
