@@ -1,0 +1,12 @@
+<launch>
+  <!-- Launch file for the GPS publisher node -->
+
+  <!-- Declare argument for the USB port -->
+  <arg name="port" default="/dev/ttyUSB0" />
+
+  <!-- Start the GPS publisher node -->
+  <node name="imu_publisher" pkg="vn_driver" type="driver.py" output="screen">
+    <param name="port" type="string" value="$(arg port)" /> 
+  </node>
+
+</launch>
