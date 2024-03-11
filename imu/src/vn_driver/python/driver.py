@@ -116,7 +116,7 @@ if __name__ == '__main__':
             custom_vectornav_msg.mag_field.magnetic_field.x = float(imu_read_split[4]) * 1e-4
             custom_vectornav_msg.mag_field.magnetic_field.y = float(imu_read_split[5]) * 1e-4
             custom_vectornav_msg.mag_field.magnetic_field.z = float(imu_read_split[6]) * 1e-4
-
+            custom_vectornav_msg.imu_read = imu_read
             # Log the custom Vectornav message
             rospy.loginfo(custom_vectornav_msg)
             
