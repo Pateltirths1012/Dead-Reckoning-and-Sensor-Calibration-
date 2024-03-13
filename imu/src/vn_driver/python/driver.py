@@ -23,6 +23,7 @@ def ReadFromSerial(serialPortAddr):
     serialPort.close()
     return imu_read
 
+# Function to write to the register of the vectornav
 def writeToSerial(serialPortAddr, command):
     serialPort = serial.Serial(port=serialPortAddr, baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
     serialPort.write(command.encode('utf-8'))
@@ -30,6 +31,7 @@ def writeToSerial(serialPortAddr, command):
     # print("Response:",response.decode('utf-8'))
     serialPort.close()
 
+# Setting the command to write to the register
 def set_imu_output_rate(serialPortAddr, rate):
     command = '$VNWRG,07,{}*XX'.format(rate)
     writeToSerial(serialPortAddr, command)
