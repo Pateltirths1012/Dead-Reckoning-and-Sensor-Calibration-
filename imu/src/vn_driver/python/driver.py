@@ -23,6 +23,17 @@ def ReadFromSerial(serialPortAddr):
     serialPort.close()
     return imu_read
 
+def writeToSerial(serialPortAddr, command):
+    serialPort = serial.Serial(port=serialPortAddr, baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+    serialPort.write(command.encode('utf-8'))
+    # response = serialPort.readline()
+    # print("Response:",response.decode('utf-8'))
+    serialPort.close()
+
+def set_imu_output_rate(serialPortAddr, rate):
+    command = '$VNWRG,07,{}*XX'.format(rate)
+    writeToSerial(serialPortAddr, command)
+
 # Function to check if a string contains the "$VNYMR" message identifier
 def isVNYMRinString(inputString):
     if "$VNYMR" in inputString:
@@ -72,6 +83,9 @@ if __name__ == '__main__':
             # Read data from serial port
             imu_read = ReadFromSerial(serialPortAddr)
             
+            #writing to the register to set the output frequency to 40hz
+            set_imu_output_rate(serialPortAddr,100)
+
             # Check if the received data contains the "$VNYMR" message identifier
             if not isVNYMRinString(imu_read):
                 continue
