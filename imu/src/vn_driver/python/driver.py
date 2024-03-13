@@ -86,7 +86,7 @@ if __name__ == '__main__':
             imu_read = ReadFromSerial(serialPortAddr)
             
             #writing to the register to set the output frequency to 40hz
-            set_imu_output_rate(serialPortAddr,100)
+            set_imu_output_rate(serialPortAddr,40)
 
             # Check if the received data contains the "$VNYMR" message identifier
             if not isVNYMRinString(imu_read):
